@@ -1,6 +1,3 @@
-#ifndef MAIN_INCLUDE
-#define MAIN_INCLUDE
-
 #include <pthread.h>
 #include <time.h>
 
@@ -224,5 +221,3 @@ int main (int argc, char* argv[argc]) {
     } while (ret == RETURN_REBOOT);
     return ret;
 }
-
-#endif
