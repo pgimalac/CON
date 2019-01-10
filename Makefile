@@ -1,6 +1,6 @@
 CC=gcc
 CFLAGS=-Wall -Wextra -std=c11
-LDFLAGS=-lSDL2 `sdl2-config --cflags --libs`
+LDFLAGS=-lSDL2 `sdl2-config --cflags --libs` -lpthread
 FILE=src/
 SRC=$(wildcard $(FILE)*.c)
 
@@ -11,15 +11,11 @@ all: $(SRC) $(EXEC)
 
 %.o: %.c
 	@echo "Compiling $?"
-	@$(CC) $(CFLAGS) -c $? -o $@ $(LDFLAGS)
+	@$(CC) $(CFLAGS) -c $? -o $@
 
 $(EXEC): $(OBJ)
 	@echo "Build executable $(EXEC)"
-	@$(CC) $(CFLAGS) $(OBJ) -o $(EXEC) $(LDFLAGS)
-
-run: $(EXEC)
-	@echo "Executing $?"
-	@./$(EXEC)
+	@$(CC) $(OBJ) -o $(EXEC) $(LDFLAGS)
 
 fclean: clean
 	@echo "Clean executable $(EXEC)"

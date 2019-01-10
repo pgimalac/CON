@@ -1,18 +1,16 @@
-#ifndef STACK
-#define STACK
+#ifndef STACK_INCLUDE
+#define STACK_INCLUDE
 
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef struct File File;
-
 // une pile de coordonnées
-struct File {
-	File *next;
-	File *prev;
+typedef struct File {
+	struct File *next;
+	struct File *prev;
 	int x;
 	int y;
-};
+} File;
 
 typedef struct {
 	File *first;

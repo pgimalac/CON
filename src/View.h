@@ -1,10 +1,10 @@
-#ifndef VIEW
-#define VIEW
+#ifndef VIEW_INCLUDE
+#define VIEW_INCLUDE
 
 #include <stdlib.h>
 #include <SDL2/SDL.h>
 
-#define SIZE 	    80
+#define SIZE  80
 #define BOARD_SIZE  (8 * SIZE)
 #define PANEL_SIZE  160
 #define LINE_SIZE   2
@@ -88,21 +88,21 @@
 #define CURRENT_PLAYER_H PANEL_SIZE - 2 * BORD
 
 typedef struct {
-    SDL_Window *screen;
-    SDL_Renderer *renderer;
+    SDL_Window* screen;
+    SDL_Renderer* renderer;
 
-    SDL_Rect *header_panel;
-    SDL_Rect *quitButton;
-    SDL_Rect *startOverButton;
-    SDL_Rect *undoButton;
-    SDL_Rect *menuButton;
-    SDL_Rect *currentPlayer;
+    SDL_Rect* header_panel;
+    SDL_Rect* quitButton;
+    SDL_Rect* startOverButton;
+    SDL_Rect* undoButton;
+    SDL_Rect* menuButton;
+    SDL_Rect* currentPlayer;
 
-    SDL_Rect *line_H;
-    SDL_Rect *line_V;
-    SDL_Rect *line_small_H;
-    SDL_Rect *line_small_V;
-    SDL_Rect *tile;
+    SDL_Rect* line_H;
+    SDL_Rect* line_V;
+    SDL_Rect* line_small_H;
+    SDL_Rect* line_small_V;
+    SDL_Rect* tile;
 } View;
 
 View* getView();

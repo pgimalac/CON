@@ -98,16 +98,16 @@ void print(View* view){
 }
 
 View* getView(){
-    if (SDL_Init(SDL_INIT_VIDEO) == -1){
-        printf("%s : %s\n", "Erreur au chargement de la librairie graphique. ", SDL_GetError());
+    if (SDL_Init(SDL_INIT_VIDEO)){
+        fprintf(stderr, "Erreur au chargement de la librairie graphique. %s\n", SDL_GetError());
         exit(EXIT_FAILURE);
     }
 
     SDL_Window* screen = SDL_CreateWindow("Othello", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                                           BOARD_SIZE, BOARD_SIZE + PANEL_SIZE, 0);
 
-    if (screen == NULL){
-        printf("%s : %s", "Erreur au chargement de la fenêtre. ", SDL_GetError());
+    if (! screen){
+        fprintf(stderr, "Erreur au chargement de la fenêtre. %s\n", SDL_GetError());
         exit(EXIT_FAILURE);
     }
 
@@ -150,7 +150,6 @@ SDL_Rect* getSDLRect(int x, int y, int w, int h){
         perror("malloc");
         exit(EXIT_FAILURE);
     }
-
     p->x = x;
     p->y = y;
     p->w = w;
@@ -221,4 +220,5 @@ void printPieces(SDL_Renderer* renderer, char board[8][8], char player){
     int x[1] = {BOARD_SIZE / 2};
     int y[1] = {PANEL_SIZE / 2};
     fillCircles(renderer, 1, x, y, PANEL_SIZE / 2 - BORD);
+
 }

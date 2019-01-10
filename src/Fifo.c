@@ -78,8 +78,6 @@ Fifo* getFifo(){
         perror("malloc");
         exit(EXIT_FAILURE);
     }
-
-
     fifo->first = NULL;
     fifo->last  = NULL;
 
