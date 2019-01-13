@@ -110,7 +110,7 @@ void print(View* view){
     SDL_RenderPresent(view->renderer);
 }
 
-View* getView(char pos_h){
+View* getView(Uint8 pos_h){
     if (SDL_Init(SDL_INIT_VIDEO)){
         fprintf(stderr, "Erreur au chargement de la librairie graphique. %s\n", SDL_GetError());
         exit(EXIT_FAILURE);
@@ -183,18 +183,18 @@ void freeView(View* view){
     SDL_Quit();
 }
 
-void printPieces(SDL_Renderer* renderer, char board[8][8], char player){
+void printPieces(SDL_Renderer* renderer, Uint8 board[8][8], Uint8 player){
     int xx1[64] = {-1};
     int yy1[64] = {-1};
     int xx2[64] = {-1};
     int yy2[64] = {-1};
-    int n1d = 0;
-    int n1e = 0;
-    int n2d = 0;
-    int n2e = 0;
+    Uint8 n1d = 0;
+    Uint8 n1e = 0;
+    Uint8 n2d = 0;
+    Uint8 n2e = 0;
     for (int i = 0; i < 8; i ++){
         for (int j = 0; j < 8; j ++){
-            char c = board[i][j];
+            Uint8 c = board[i][j];
             int xxx = i * SIZE + SIZE / 2;
             int yyy = PANEL_SIZE + j * SIZE + SIZE / 2;
             switch (c){

@@ -2,7 +2,8 @@
 #define STACK_INCLUDE
 
 #include <stdio.h>
-#include <stdlib.h>
+
+typedef unsigned char Uint8;
 
 // une pile de coordonnées
 typedef struct File {
@@ -21,10 +22,10 @@ Fifo* getFifo();
 File* getFile(int, int);
 void addFirstFifo(Fifo*, int, int);
 void addLastFifo(Fifo*, int, int);
-char removeFirstFifo(Fifo*);
-char removeLastFifo(Fifo*);
+Uint8 removeFirstFifo(Fifo*);
+Uint8 removeLastFifo(Fifo*);
 int length(Fifo*);
-char isEmptyFifo(Fifo*);
+Uint8 isEmptyFifo(Fifo*);
 void freeFifo(Fifo*);
 void removeAllFifo(Fifo*);
 

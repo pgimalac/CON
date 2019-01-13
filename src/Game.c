@@ -19,7 +19,7 @@ static int updatePossiblePlay(Game* game){
                     int x = i;
                     int y = j;
                     if (dx == 0 && dy == 0) continue;
-                    char c = -1;
+                    Uint8 c = -1;
                     do{
                         c ++;
                         x += dx;
@@ -86,7 +86,7 @@ static void playTile(Game* game, int x, int y){
     addLastFifo(game->moves, x, y);
 }
 
-Game* init(char gameType, char role){
+Game* init(Uint8 gameType, Uint8 role){
     Game* game = malloc(sizeof(Game));
     if (!game){
         perror("malloc");
@@ -98,7 +98,7 @@ Game* init(char gameType, char role){
     return game;
 }
 
-void reInit(Game* game, char gameType, char role){
+void reInit(Game* game, Uint8 gameType, Uint8 role){
     game->current_player = PLAYER1;
     game->block = FALSE;
     game->gameType = gameType;

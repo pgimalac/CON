@@ -26,7 +26,7 @@ void addLastFifo(Fifo* fifo, int x, int y){
     fifo->last = file;
 }
 
-char removeFirstFifo(Fifo* fifo){
+Uint8 removeFirstFifo(Fifo* fifo){
     File* file = fifo->first;
     if (file){
         fifo->first = file->next;
@@ -41,7 +41,7 @@ char removeFirstFifo(Fifo* fifo){
     return !isEmptyFifo(fifo);
 }
 
-char removeLastFifo(Fifo* fifo){
+Uint8 removeLastFifo(Fifo* fifo){
     File* file = fifo->last;
     if (file){
         fifo->last = file->prev;
@@ -84,7 +84,7 @@ Fifo* getFifo(){
     return fifo;
 }
 
-char isEmptyFifo(Fifo* fifo){
+Uint8 isEmptyFifo(Fifo* fifo){
     return fifo == NULL ? -1 : fifo->first == NULL;
 }
 

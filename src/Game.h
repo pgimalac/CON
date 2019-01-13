@@ -1,7 +1,11 @@
 #ifndef GAME_INCLUDE
 #define GAME_INCLUDE
 
+#include <stdio.h>
+
 #include "Fifo.h"
+
+typedef unsigned char Uint8;
 
 /**
  * Board informations
@@ -47,27 +51,27 @@ typedef struct {
     /**
      * the board
      */
-	char board[BOARD_WIDTH][BOARD_WIDTH];
+	Uint8 board[BOARD_WIDTH][BOARD_WIDTH];
 
     /**
      * true if a player was blocked the previous turn, false otherwise
      */
-    char block;
+    Uint8 block;
 
     /**
      * NONE, ONLINE_GAME, LOCAL_GAME(, AI_GAME maybe to come)
      */
-    char gameType;
+    Uint8 gameType;
 
     /**
      * used when playing online to know which player is which
      */
-    char role;
+    Uint8 role;
 } Game;
 
-Game* init(char, char);
+Game* init(Uint8, Uint8);
 int play(Game*, int, int);
-void reInit(Game*, char, char);
+void reInit(Game*, Uint8, Uint8);
 void freeGame(Game*);
 void cancelMoves(Game*, int);
 

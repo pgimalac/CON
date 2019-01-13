@@ -109,9 +109,9 @@ typedef struct {
     SDL_Rect* tile;
 } View;
 
-View* getView(char);
+View* getView(Uint8);
 void print(View*);
-void printPieces(SDL_Renderer*, char[8][8], char);
+void printPieces(SDL_Renderer*, Uint8[8][8], Uint8);
 void printLines(View*);
 void printTiles(View*);
 void freeView(View*);
