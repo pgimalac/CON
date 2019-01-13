@@ -87,6 +87,10 @@
 #define CURRENT_PLAYER_W PANEL_SIZE - 2 * BORD
 #define CURRENT_PLAYER_H PANEL_SIZE - 2 * BORD
 
+#define LEFT_SCREEN 1
+#define MIDDLE_SCREEN 2
+#define RIGHT_SCREEN 3
+
 typedef struct {
     SDL_Window* screen;
     SDL_Renderer* renderer;
@@ -105,13 +109,11 @@ typedef struct {
     SDL_Rect* tile;
 } View;
 
-View* getView();
+View* getView(char);
 void print(View*);
 void printPieces(SDL_Renderer*, char[8][8], char);
 void printLines(View*);
 void printTiles(View*);
 void freeView(View*);
-SDL_Rect* getSDLRect(int, int, int, int);
-void fillCircles(SDL_Renderer*, int, int[], int[], int);
 
 #endif

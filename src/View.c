@@ -1,6 +1,19 @@
 #include "View.h"
 
-void fillCircles(SDL_Renderer* renderer, int size, int xx[size], int yy[size], int radius){
+static SDL_Rect* getSDLRect(int x, int y, int w, int h){
+    SDL_Rect* p = malloc(sizeof(SDL_Rect));
+    if (p == NULL){
+        perror("sdl_rect malloc");
+        exit(EXIT_FAILURE);
+    }
+    p->x = x;
+    p->y = y;
+    p->w = w;
+    p->h = h;
+    return p;
+}
+
+static void fillCircles(SDL_Renderer* renderer, int size, int xx[size], int yy[size], int radius){
     for (int i = 0; i < radius; i++){
         for (int j = 0; i >= j && (i * i) + (j * j) <= (radius * radius); j++){
             for (int k = 0; k < size; k ++){
@@ -97,13 +110,25 @@ void print(View* view){
     SDL_RenderPresent(view->renderer);
 }
 
-View* getView(){
+View* getView(char pos_h){
     if (SDL_Init(SDL_INIT_VIDEO)){
         fprintf(stderr, "Erreur au chargement de la librairie graphique. %s\n", SDL_GetError());
         exit(EXIT_FAILURE);
     }
 
-    SDL_Window* screen = SDL_CreateWindow("Othello", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+    SDL_DisplayMode dm;
+    SDL_GetCurrentDisplayMode(0, &dm);
+    int x;
+    if (pos_h == LEFT_SCREEN)
+        x = dm.w / 4 - BOARD_SIZE / 2;
+    else if (pos_h == RIGHT_SCREEN){
+        x = 3 * dm.w / 4 - BOARD_SIZE / 2;
+    }
+    else
+        x = SDL_WINDOWPOS_CENTERED;
+
+
+    SDL_Window* screen = SDL_CreateWindow("Othello", x, SDL_WINDOWPOS_CENTERED,
                                           BOARD_SIZE, BOARD_SIZE + PANEL_SIZE, 0);
 
     if (! screen){
@@ -112,10 +137,10 @@ View* getView(){
     }
 
     SDL_Renderer* renderer = SDL_CreateRenderer(screen, -1, 0);
-    View* view = malloc(sizeof(View));
+    View* view = (View*)malloc(sizeof(View));
 
     if (view == NULL){
-        perror("malloc");
+        perror("view malloc");
         exit(EXIT_FAILURE);
     }
 
@@ -139,22 +164,23 @@ View* getView(){
 }
 
 void freeView(View* view){
+    SDL_DestroyRenderer(view->renderer);
     SDL_DestroyWindow(view->screen);
-    free(view);
-    SDL_Quit();
-}
 
-SDL_Rect* getSDLRect(int x, int y, int w, int h){
-    SDL_Rect* p = malloc(sizeof(SDL_Rect));
-    if (p == NULL){
-        perror("malloc");
-        exit(EXIT_FAILURE);
-    }
-    p->x = x;
-    p->y = y;
-    p->w = w;
-    p->h = h;
-    return p;
+    free(view->header_panel);
+    free(view->quitButton);
+    free(view->startOverButton);
+    free(view->undoButton);
+    free(view->menuButton);
+    free(view->currentPlayer);
+    free(view->line_small_V);
+    free(view->line_small_H);
+    free(view->line_V);
+    free(view->line_H);
+    free(view->tile);
+    free(view);
+
+    SDL_Quit();
 }
 
 void printPieces(SDL_Renderer* renderer, char board[8][8], char player){

@@ -5,7 +5,7 @@
 #include "View.h"
 #include "Game.h"
 
-char buffer[FAT_BUFFER_SIZE];
+char buffer[FAT_BUFFER_SIZE] = {0};
 
 Game* game;
 View* view;
@@ -17,51 +17,43 @@ void *networkThread(void* p){
     struct pollfd poll_set;
     poll_set.fd = playerSocket;
     poll_set.events = POLLIN;
-    static int number = 15;
-    int ret;
     do {
         printf("%lu : Network Thread begin loop\n", (unsigned long)time(NULL));
-        ret = poll(&poll_set, 1, -1) < 0;
-        if (ret == -1){
+        if (poll(&poll_set, 1, -1) == -1){
             perror("poll");
-        } else if (ret > 0) {
-            if (poll_set.revents & (POLLERR | POLLHUP | POLLNVAL)){
-                if (poll_set.revents & POLLNVAL)
-                    fprintf(stderr, "%lu : POLLNVAL error with the socket (invalid socket)", (unsigned long)time(NULL));
-                if (poll_set.revents & POLLHUP)
-                    fprintf(stderr, "%lu : POLLHUP error with the socket (network error)", (unsigned long)time(NULL));
-                if (poll_set.revents & POLLERR)
-                    fprintf(stderr, "%lu : POLLERR error with the socket (network error or player left)", (unsigned long)time(NULL));
+            continue;
+        }
+
+        if (poll_set.revents & (POLLERR | POLLHUP | POLLNVAL)){
+            printPollError(poll_set.revents, "Network thread :");
+            keepRunning = FALSE;
+            close(playerSocket);
+            exit(RETURN_ERROR);
+        }
+
+        if (poll_set.revents & POLLIN){
+            printf("%lu : Receiving opponent's message ...\n", (unsigned long)time(NULL));
+            ssize_t length = recv(poll_set.fd, buffer, FAT_BUFFER_SIZE, MSG_NOSIGNAL);
+            if (length == -1){
+                perror("recv");
                 keepRunning = FALSE;
                 close(playerSocket);
                 exit(RETURN_ERROR);
+            } else if (length == 0) {
+                fprintf(stderr, "%lu : opponent left\n", (unsigned long)time(NULL));
+                keepRunning = FALSE;
+                close(playerSocket);
+                exit(RETURN_ERROR);
+            } else {
+                if (buffer[0] == MOVE){
+                    char x = buffer[1];
+                    char y = buffer[2];
+                    if (play(game, x, y))
+                        printPieces(view->renderer, game->board, game->current_player);
+                }
             }
-            if (poll_set.revents & POLLIN){
-                printf("%lu : Receiving opponent's message ...\n", (unsigned long)time(NULL));
-                ssize_t length = recv(poll_set.fd, buffer, FAT_BUFFER_SIZE, 0);
-                if (length == -1){
-                    perror("recv");
-                    keepRunning = FALSE;
-                    close(playerSocket);
-                    exit(RETURN_ERROR);
-                } else if (length == 0) {
-                    printf("%lu : Empty message received.\n", (unsigned long)time(NULL));
-                } else {
-                    if (buffer[0] == MOVE){
-                        char x = buffer[1];
-                        char y = buffer[2];
-                        if (play(game, x, y))
-                            printPieces(view->renderer, game->board, game->current_player);
-                    }
-                }
-/*                printf("Sending ack\n");
-                if (send(playerSocket, &ACK, 1, 0) <= 0){
-                    perror("Error sending ack ");
-                    exit(RETURN_ERROR);
-                }
-*/          }
         }
-    } while (keepRunning && number--);
+    } while (keepRunning);
 
     return NULL;
 }
@@ -94,44 +86,15 @@ void *inputThread(void* p){
                             if (game->gameType == ONLINE_GAME){ // if it is an online game it means the player is the good one
                                 printf("%lu : Online game : sending the move.\n", (unsigned long)time(NULL));
 
-                                buffer[0] = MOVE;
+                                buffer[0] = (char)MOVE;
                                 buffer[1] = x;
                                 buffer[2] = y;
-                                buffer[3] = EOS;
-/*                                char boo = 0;
-                                do {
-                                    if (boo == 5){
-                                        printf("Still no ACK received : connection error\n");
-                                        exit(RETURN_ERROR);
-                                    }
-                                    boo ++;
-                                    printf("Sending the move.\n");
-*/                                    if (send(playerSocket, buffer, 4, 0) <= 0){
-                                        printf("%lu : ", (unsigned long)time(NULL));
-                                        perror("Network error sending the message ");
-                                        exit(RETURN_ERROR);
-                                    }
-/*                                    printf("Message sent %d time\n", boo);
-                                    if (poll(poll_set, 1, 1) == -1){
-                                        perror("Poll error waiting for the ACK ");
-                                        exit(RETURN_ERROR);
-                                    } else if (poll_set->revents & (POLLNVAL | POLLERR | POLLHUP)){
-                                        perror("Socket error waiting for the ACK ");
-                                        exit(RETURN_ERROR);
-                                    } else if (poll_set->revents & POLLIN){
-                                        if (recv(poll_set->fd, buffer, FAT_BUFFER_SIZE, 0) == -1){
-                                            perror("Error (maybe) receiving the ACK ");
-                                            exit(RETURN_ERROR);
-                                        } else {
-                                            if (buffer[0] == ACK)
-                                                boo = 0;
-                                            else
-                                                printf("No ACK received.\n");
-                                        }
-                                    } else
-                                        printf("No ACK received.\n");
-                                } while(boo != 0);
-*/                                printf("Message successfully sent.\n");
+                                if (send(playerSocket, buffer, 3, MSG_NOSIGNAL) < 0) {
+                                    printf("%lu : ", (unsigned long)time(NULL));
+                                    perror("Network error sending the message ");
+                                    exit(RETURN_ERROR);
+                                }
+                                printf("Message successfully sent.\n");
                             }
                             printPieces(view->renderer, game->board, game->current_player);
                         }
@@ -164,30 +127,40 @@ void *inputThread(void* p){
 }
 
 int playGame(char type, char role){
-    view = getView();
+    char pos_h = 0;
+    if (type == LOCAL_GAME)
+        pos_h = MIDDLE_SCREEN;
+    else if (type == ONLINE_GAME){
+        if (role == PLAYER1)
+            pos_h = LEFT_SCREEN;
+        else
+            pos_h = RIGHT_SCREEN;
+    }
+
+    view = getView(pos_h);
     game = init(type, role);
 
     inputThread(NULL);
     return RETURN_SUCCESS;
 }
 
-int main (int argc, char* argv[argc]) {
+int main (int argc, char *argv[argc]) {
     int ret = RETURN_ARG_ERROR;
 
-    if (argc == 3 && (argv[1][0] == 'h' || argv[1][0] == 'c')){
+    if (argc == 3 && (strcmp(argv[1], "host") == 0 || strcmp(argv[1], "client") == 0)) {
         if (strlen(argv[2]) < INET_ADDRSTRLEN)
             setServerIpAdress(argv[2]);
         else
-            printf("The second argument is too long.\n");
+            fprintf(stderr, "The second argument is too long.\n");
         argc --;
     }
 
     if (argc < 2){
-        printf("Too few arguments !\n");
+        fprintf(stderr, "Too few arguments !\n");
         return ret;
     }
     else if (argc > 2){
-        printf("Too many arguments !\n");
+        fprintf(stderr, "Too many arguments !\n");
         return ret;
     }
 
@@ -199,7 +172,7 @@ int main (int argc, char* argv[argc]) {
             if (ret > 0){
                 playerSocket = ret;
                 if ((networkT = pthread_create(&networkT, NULL, networkThread, NULL)) != 0){
-                    perror("Error creating the network thread ");
+                    fprintf(stderr, "pthread_create");
                     exit(RETURN_ERROR);
                 }
                 ret = playGame(ONLINE_GAME, PLAYER1);
@@ -209,7 +182,7 @@ int main (int argc, char* argv[argc]) {
             if (ret > 0){
                 playerSocket = ret;
                 if ((networkT = pthread_create(&networkT, NULL, networkThread, NULL)) != 0){
-                    perror("Error creating the network thread ");
+                    fprintf(stderr, "pthread_create");
                     exit(RETURN_ERROR);
                 }
                 ret = playGame(ONLINE_GAME, PLAYER2);
@@ -217,7 +190,7 @@ int main (int argc, char* argv[argc]) {
         } else if (strcmp(argv[1], "local") == 0) { // local game
             ret = playGame(LOCAL_GAME, NONE);
         } else
-            printf("Bad argument\n");
+            fprintf(stderr, "Bad argument\n");
     } while (ret == RETURN_REBOOT);
     return ret;
 }

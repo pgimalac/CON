@@ -68,10 +68,6 @@ typedef struct {
 Game* init(char, char);
 int play(Game*, int, int);
 void reInit(Game*, char, char);
-void nextPlayer(Game*);
-void emptyPossibles(Game*);
-int updatePossiblePlay(Game*);
-void playTile(Game*, int, int);
 void freeGame(Game*);
 void cancelMoves(Game*, int);
 

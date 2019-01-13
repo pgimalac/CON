@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=-Wall -Wextra -std=c11
+CFLAGS=-g -Wall -Wextra -std=c11
 LDFLAGS=-lSDL2 `sdl2-config --cflags --libs` -lpthread
 FILE=src/
 SRC=$(wildcard $(FILE)*.c)
