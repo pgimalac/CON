@@ -96,6 +96,11 @@ void printPollError(int, char*);
  * If the given string's length is less than INET_ADDRSTRLEN
  * the function changes the server ip address
  */
-void setServerIpAdress(char*);
+void setServerIpAddress(char*);
+
+/**
+ * Returns the current server ip address
+ */
+char* getServerIpAddress();
 
 #endif

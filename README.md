@@ -1,14 +1,14 @@
 # Informations générales
 Le projet s'appelle CON pour C Othello Network (evidemment).
 
-Il s'agit d'un projet personnel pour m'entraîner en C et m'initier à la programmation réseau. Je l'ai commencé en septembre 2016, j'espère le finir un jour.
+Il s'agit d'un projet personnel commencé en septembre 2016 pour m'entraîner en C et m'initier à la programmation réseau.
 
 Il se trouve que la V1.0 est le projet de C de 2015-2016 (je m'en suis rendu compte après coup).
 
 ## Compilation et exécution
 Un makefile est fourni, un simple `make all` ou `make re` compilera la totalité du projet.
 
-La librairie graphique SDL est nécéssaire à l'execution du programme.
+La librairie graphique SDL (version 2) est nécessaire à l'exécution du programme.
 
 Pour l'exécuter en réseau, il faut ouvrir trois terminaux et faire :
 - Dans le premier terminal, `./con server`
@@ -33,10 +33,10 @@ Version finie.
 Version en cours.
 
 ##### Particularités
-- [ ] Possibilité de jouer en réseau local sur deux machines distinctes
-- [ ] Connexion directe entre deux clients
-- [ ] Possibilité de choisir son adversaire en indiquant son IP
-- [ ] Menu de matchmaking pour choisir son adversaire
+- [x] Possibilité de jouer en réseau local sur deux machines distinctes
+- [x] Utilisation d'un server pour faire le lien entre les clients
+- [x] Possibilité de choisir son adversaire en indiquant son IP
+- [x] Menu de matchmaking pour choisir son adversaire
 
 ### V3.0
 Future version. Pour l'instant théorique.

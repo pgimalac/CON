@@ -164,11 +164,19 @@ int client () {
 
             // try to connect to the selected host
             printf("CLIENT : Connecting to the host...\n");
+
+            if (strcmp(buffer2, "127.0.0.1") == 0)
+                buffer2 = getServerIpAddress();
+            else
+                buffer2 = strdup(buffer2);
+
             if ((talkToHostSock = getTalkToServerSock(buffer2, HOST_PORT)) < 0) {
                 fprintf(stderr, "CLIENT : Error connecting to the host.\n");
+                free(buffer2);
                 choice = 0;
             } else {
                 printf("%lu : Successful connection !\n", (unsigned long)time(NULL));
+                free(buffer2);
                 return talkToHostSock;
             }
         } else

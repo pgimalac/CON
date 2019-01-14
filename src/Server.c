@@ -2,13 +2,17 @@
 
 char server_ip_address[INET_ADDRSTRLEN] = "127.0.0.1";
 
-void setServerIpAdress(char* add){
+void setServerIpAddress(char* add){
     if (add == NULL) return;
 
     if (strlen(add) >= INET_ADDRSTRLEN)
         fprintf(stderr, "%s is too long to be a valid IPV4 adress.\n", add);
     else
         strcpy(server_ip_address, add);
+}
+
+char* getServerIpAddress(){
+    return strdup(server_ip_address);
 }
 
 int getTalkToClientSock(int port){
@@ -114,20 +118,6 @@ void printPollError(int revents, char* st){
         fprintf(stderr, "%s POLLERR error with the socket (network error or player left)\n", st);
 }
 
-static char find_own_ip(int fd, char* buffer, unsigned long size){
-    struct ifreq ifr;
-    ifr.ifr_addr.sa_family = AF_INET;
-    strcpy(ifr.ifr_name, "wlp3s0");
-    ioctl(fd, SIOCGIFADDR, &ifr);
-
-    if (strlen(inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr)) <= size){
-        strcpy(buffer, inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr));
-        return 1;
-    }
-
-    return 0;
-}
-
 int server () {
     int talkToClientSock = getTalkToClientSock(SERVER_PORT), new_socket, valread;
     socklen_t addrlen = sizeof(connect_to_client_addr);
@@ -165,9 +155,6 @@ int server () {
             }
 
             inet_ntop(AF_INET, &connect_to_client_addr.sin_addr, waiting_hosts[number_of_hosts]->ip, INET_ADDRSTRLEN);
-
-            if (strcmp("127.0.0.1", waiting_hosts[number_of_hosts]->ip) == 0 && find_own_ip(new_socket, waiting_hosts[number_of_hosts]->ip, INET_ADDRSTRLEN) == 0)
-                return RETURN_ERROR;
 
             number_of_hosts ++;
 
