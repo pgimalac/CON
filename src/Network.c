@@ -125,7 +125,7 @@ int client () {
 
         int host_number = -1, valread;
         if (poll_fd.revents & POLLIN){
-            valread = recv(talkToServerSock, buffer, FAT_BUFFER_SIZE, 20);
+            valread = recv(talkToServerSock, buffer, FAT_BUFFER_SIZE, 0);
             if (valread < 0){
                 perror("recv");
                 close(talkToServerSock);
