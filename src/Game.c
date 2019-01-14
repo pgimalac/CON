@@ -138,14 +138,14 @@ void cancelMoves(Game* game, int n){
 
 void freeGame(Game* game){
     freeFifo(game->moves);
-    freeGame(game);
+    free(game);
 }
 
 int play(Game* game, int x, int y){
     if (game->board[x][y] == PLAYABLE){
         playTile(game, x, y);
         nextPlayer(game);
-        if (game->current_player != NONE)
+        if (game->current_player == NONE)
             printf("done\n");
         return TRUE;
     }

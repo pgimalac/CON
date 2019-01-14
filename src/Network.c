@@ -27,7 +27,7 @@ int host (){
 
     if (send(poll_set[0].fd, name, len + 1, MSG_NOSIGNAL) <= 0){
         printf("Error sending the name to the server\n");
-        exit(EXIT_FAILURE);
+        return RETURN_ERROR;
     }
 
     int addrlen = sizeof(struct sockaddr_in), otherClientSocket;
@@ -37,28 +37,30 @@ int host (){
         printf("HOST : POLLing...\n");
         if (poll(poll_set, 2, -1) == -1){
             perror("poll");
-            exit(EXIT_FAILURE);
+            return RETURN_ERROR;
         }
 
         // talk to server part
         if (poll_set[0].revents & POLL_ERROR){
             printf("HOST_TO_SERVER : error with the server.\n");
-            exit(EXIT_FAILURE);
+            return RETURN_ERROR;
         } else if (poll_set[0].revents & POLLIN) {
             length = recv(poll_set[0].fd, buffer, 2, 0);
 
             if (length == -1) {
                 perror("recv");
                 close (poll_set[0].fd);
-                exit(EXIT_FAILURE);
+                close (poll_set[1].fd);
+                return RETURN_ERROR;
             } else if (length == 0) {
                 printf("HOST_TO_SERVER : server shut down.\n");
-                close(poll_set[0].fd);
-                exit(EXIT_FAILURE);
+                close (poll_set[0].fd);
+                close (poll_set[1].fd);
+                return RETURN_ERROR;
             }
 
             printf("HOST_TO_SERVER : received %ld messages\n", length);
-            // TODO
+            // TODO ?
         }
 
         // talk to client part
@@ -93,7 +95,7 @@ static void print_host_list(int host_number, char* buffer) {
 }
 
 int client () {
-    int choice = CLIENT_HOSTLIST_REFRESH;
+    int choice = RETURN_REBOOT;
     char buffer[FAT_BUFFER_SIZE];
     int talkToHostSock;
     do{
@@ -152,10 +154,10 @@ int client () {
         }
 
         close(talkToServerSock);
-        printf("CLIENT : Enter the number of the host, %d to refresh or any other number to quit.\n", CLIENT_HOSTLIST_REFRESH);
-        if (scanf("%d", &choice) < 1 || (choice <= 0 && choice != CLIENT_HOSTLIST_REFRESH))
-            choice = CLIENT_QUIT;
-        else if (choice != CLIENT_HOSTLIST_REFRESH) {
+        printf("CLIENT : Enter the number of the host, 0 to refresh or any other number to quit.\n");
+        if (scanf("%d", &choice) < 1 || choice < 0)
+            choice = RETURN_REBOOT;
+        else if (choice != 0) {
             char* buffer2 = buffer + 1 + sizeof(int);
             for (int k = 2 * choice - 1; k > 0 && buffer2 - buffer <= valread; k--)
                 buffer2 += strlen(buffer2) + 1;
@@ -164,13 +166,14 @@ int client () {
             printf("CLIENT : Connecting to the host...\n");
             if ((talkToHostSock = getTalkToServerSock(buffer2, HOST_PORT)) < 0) {
                 fprintf(stderr, "CLIENT : Error connecting to the host.\n");
-                choice = CLIENT_HOSTLIST_REFRESH;
+                choice = 0;
             } else {
                 printf("%lu : Successful connection !\n", (unsigned long)time(NULL));
                 return talkToHostSock;
             }
-        }
-    } while (choice != CLIENT_QUIT);
+        } else
+            choice = RETURN_REBOOT;
+    } while (choice != RETURN_REBOOT);
 
-    return RETURN_SUCCESS;
+    return choice;
 }

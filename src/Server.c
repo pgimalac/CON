@@ -107,11 +107,11 @@ int getTalkToServerSock(char* server_ip, int port){
 
 void printPollError(int revents, char* st){
     if (revents & POLLNVAL)
-        fprintf(stderr, "%s POLLNVAL error with the socket (invalid socket)", st);
+        fprintf(stderr, "%s POLLNVAL error with the socket (invalid socket)\n", st);
     if (revents & POLLHUP)
-        fprintf(stderr, "%s POLLHUP error with the socket (network error)", st);
+        fprintf(stderr, "%s POLLHUP error with the socket (network error)\n", st);
     if (revents & POLLERR)
-        fprintf(stderr, "%s POLLERR error with the socket (network error or player left)", st);
+        fprintf(stderr, "%s POLLERR error with the socket (network error or player left)\n", st);
 }
 
 int server () {

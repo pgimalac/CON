@@ -24,7 +24,7 @@ pthread_t networkT;
 static void *networkThread(void* p) {
     struct pollfd poll_set = {0};
     poll_set.fd = playerSocket;
-    poll_set.revents = POLLIN;
+    poll_set.events = POLLIN;
 
     do {
         printf("%lu : Network Thread begin loop\n", (unsigned long)time(NULL));
@@ -54,16 +54,18 @@ static void *networkThread(void* p) {
                 exit(RETURN_ERROR);
             } else {
                 printf("Message received.\n");
-                if (buffer[0] == MOVE) {
+                if (buffer[0] == CLIENT_CLIENT_MOVE) {
                     printf("Move received.\n");
                     Uint8 x = buffer[1];
                     Uint8 y = buffer[2];
                     if (play(game, x, y)){
                         printf("Good move.\n");
+//                        print(view);
                         printPieces(view->renderer, game->board, game->current_player);
                     } else
-                        fprintf(stderr, "Unexpected message.\n");
-                }
+                        fprintf(stderr, "Bad move.\n");
+                } else
+                    fprintf(stderr, "Unexpected message.\n");
             }
         }
     } while (keepRunning);
@@ -91,6 +93,7 @@ static void inputThread() {
 
     }
 
+    freeGame(game);
     freeView(view);
 }
 
@@ -150,7 +153,6 @@ int main (int argc, char *argv[argc]) {
             ret = client();
             if (ret > 0) {
                 playerSocket = ret;
-
                 if ((networkT = pthread_create(&networkT, NULL, networkThread, NULL)) != 0) {
                     fprintf(stderr, "pthread_create");
                     exit(RETURN_ERROR);

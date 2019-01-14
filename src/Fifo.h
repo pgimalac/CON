@@ -2,6 +2,7 @@
 #define STACK_INCLUDE
 
 #include <stdio.h>
+#include <stdlib.h>
 
 typedef unsigned char Uint8;
 

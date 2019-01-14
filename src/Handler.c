@@ -26,7 +26,7 @@ void handle_mouse(SDL_MouseButtonEvent mouse_event){
             if (game->gameType == ONLINE_GAME) { // if it is an online game it means the player is the good one
                 printf("%lu : Online game : sending the move.\n", (unsigned long)time(NULL));
 
-                buffer[0] = MOVE;
+                buffer[0] = CLIENT_CLIENT_MOVE;
                 buffer[1] = x;
                 buffer[2] = y;
                 if (send(playerSocket, buffer, 3, MSG_NOSIGNAL) < 0) {
