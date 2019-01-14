@@ -117,7 +117,7 @@ void printPollError(int revents, char* st){
 static char find_own_ip(int fd, char* buffer, unsigned long size){
     struct ifreq ifr;
     ifr.ifr_addr.sa_family = AF_INET;
-    strcpy(ifr.ifr_name, "eth0");
+    strcpy(ifr.ifr_name, "wlp3s0");
     ioctl(fd, SIOCGIFADDR, &ifr);
 
     if (strlen(inet_ntoa(((struct sockaddr_in *)&ifr.ifr_addr)->sin_addr)) <= size){
