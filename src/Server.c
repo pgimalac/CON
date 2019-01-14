@@ -164,10 +164,13 @@ int server () {
             } else if (poll_set[i + 1].revents & POLLIN){
                 valread = recv(poll_set[i + 1].fd, &buffer, FAT_BUFFER_SIZE, 0);
 
-                if (valread <= 0){
+                if (valread < 0){
                     perror("recv");
                     removeHost(&number_of_hosts, poll_set, waiting_hosts, i);
-                } else {
+                } else if (valread == 0) {
+                    printf("Remove host.\n");
+                    removeHost(&number_of_hosts, poll_set, waiting_hosts, i);
+                } else
                     buffer[valread] = EOS;
                     printf("length of the message %d, message : \"%s\"\n", valread, buffer);
                     if (buffer[0] == HOST_SERVER_NAME){ // change the name of the host
