@@ -14,7 +14,9 @@ Game* game;
 View* view;
 Uint8 keepRunning = TRUE;
 int playerSocket;
-SDL_Thread *thread;
+SDL_Thread *inputT, *networkT;
+Fifo* draw_events;
+SDL_cond* cond;
 
 /**
  * The arguments and return value aren't used
@@ -61,8 +63,8 @@ static int networkThread(void* p) {
                     Uint8 y = buffer[2];
                     if (play(game, x, y)){
                         printf("Good move.\n");
-//                        print(view);
-                        printPieces(view->renderer, game->board, game->current_player);
+                        addFirstFifo(draw_events, DRAW_TILES, 0);
+                        SDL_CondSignal(cond);
                     } else
                         fprintf(stderr, "Bad move.\n");
                 } else
@@ -101,6 +103,40 @@ static int inputThread(void* p) {
     return 0;
 }
 
+static int viewThread(void){
+    SDL_mutex *mut = SDL_CreateMutex();
+    cond = SDL_CreateCond();
+
+    draw_events = getFifo();
+    print(view);
+    printPieces(view->renderer, game->board, game->current_player);
+
+    int x;
+
+    while (keepRunning){
+        printf("viewThread begin\n");
+
+        SDL_mutexP (mut);
+        SDL_CondWait(cond, mut);
+
+        while (!isEmptyFifo(draw_events)) {
+            printf("draw_events not empty yet.\n");
+            x = draw_events->last->x;
+            removeLastFifo(draw_events);
+
+            if (x == DRAW_TILES){
+                printf("print pieces\n");
+                printPieces(view->renderer, game->board, game->current_player);
+            }
+            else if (x == DRAW_MENU)
+                print(view);
+        }
+        printf("viewThread end : no more draw_events\n");
+    }
+
+    return 0;
+}
+
 static Uint8 playGame(Uint8 type, Uint8 role) {
     Uint8 pos_h = 0;
     if (type == LOCAL_GAME)
@@ -115,16 +151,19 @@ static Uint8 playGame(Uint8 type, Uint8 role) {
     view = getView(pos_h);
     game = init(type, role);
 
-    print(view);
-    printPieces(view->renderer, game->board, game->current_player);
-
-    thread = SDL_CreateThread(networkThread, "Network Thread", NULL);
-    if (thread == NULL) {
+    networkT = SDL_CreateThread(networkThread, "Network Thread", NULL);
+    if (networkT == NULL) {
         fprintf(stderr, "SDL_CreateThread");
         exit(RETURN_ERROR);
     }
 
-    inputThread(NULL);
+    inputT = SDL_CreateThread(inputThread, "Input Thread", NULL);
+    if (inputT == NULL) {
+        fprintf(stderr, "SDL_CreateThread");
+        exit(RETURN_ERROR);
+    }
+
+    viewThread();
 
     return RETURN_SUCCESS;
 }

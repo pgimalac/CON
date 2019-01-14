@@ -5,6 +5,8 @@ extern Game* game;
 extern View* view;
 extern int playerSocket;
 extern Uint8 keepRunning;
+extern Fifo* draw_events;
+extern SDL_cond* cond;
 
 static Uint8 button_clicked(int click_x, int click_y, int x, int y, int w, int h){
     return click_x >= x && click_x < x + w && click_y >= y && click_y < y + h;
@@ -36,16 +38,19 @@ void handle_mouse(SDL_MouseButtonEvent mouse_event){
                 }
                 printf("Message successfully sent.\n");
             }
-            printPieces(view->renderer, game->board, game->current_player);
+            addFirstFifo(draw_events, DRAW_TILES, 0);
+            SDL_CondSignal(cond);
         }
     }
     else if (game->gameType == LOCAL_GAME && button_clicked(mouse_event.x, mouse_event.y, START_OVER_BUTTON_X, START_OVER_BUTTON_Y, START_OVER_BUTTON_W, START_OVER_BUTTON_H)) {
         reInit(game, game->gameType, game->role);
-        printPieces(view->renderer, game->board, game->current_player);
+        addFirstFifo(draw_events, DRAW_TILES, 0);
+        SDL_CondSignal(cond);
     }
     else if (game->gameType == LOCAL_GAME && button_clicked(mouse_event.x, mouse_event.y, UNDO_BUTTON_X, UNDO_BUTTON_Y, UNDO_BUTTON_W, UNDO_BUTTON_H)) {
         cancelMoves(game, 1);
-        printPieces(view->renderer, game->board, game->current_player);
+        addFirstFifo(draw_events, DRAW_TILES, 0);
+        SDL_CondSignal(cond);
     }
     else if (button_clicked(mouse_event.x, mouse_event.y, QUIT_BUTTON_X, QUIT_BUTTON_Y, QUIT_BUTTON_W, QUIT_BUTTON_H)) {
         keepRunning = FALSE;
@@ -59,7 +64,8 @@ void handle_keyboard(SDL_KeyboardEvent key_event){
     printf("key pressed.\n");
     if (key_event.keysym.sym == SDLK_r) {
         printf("Refresh view.\n");
-        print(view);
-        printPieces(view->renderer, game->board, game->current_player);
+        addFirstFifo(draw_events, DRAW_MENU, 0);
+        addFirstFifo(draw_events, DRAW_TILES, 0);
+        SDL_CondSignal(cond);
     }
 }

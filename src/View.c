@@ -270,7 +270,7 @@ void printPieces(SDL_Renderer* renderer, Uint8 board[8][8], Uint8 player){
     if (n2e){
         if (SDL_SetRenderDrawColor(renderer, POTENTIAL_R, POTENTIAL_G, POTENTIAL_B, POTENTIAL_A))
             fprintf(stderr, "%s\n", SDL_GetError());
-        fillCircles(renderer, n2e, xx2 + 64 - n2e, yy2 + 64 - n2e, RADIUS);
+        fillCircles(renderer, n2e, xx2 + 64 - n2e, yy2 + 64 - n2e, RADIUS / 2);
     }
 
     if (player == 1){
