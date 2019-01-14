@@ -17,14 +17,14 @@ static void fillCircles(SDL_Renderer* renderer, int size, int xx[size], int yy[s
     for (int i = 0; i < radius; i++){
         for (int j = 0; i >= j && (i * i) + (j * j) <= (radius * radius); j++){
             for (int k = 0; k < size; k ++){
-                SDL_RenderDrawPoint(renderer, xx[k] + i, yy[k] + j);
-                SDL_RenderDrawPoint(renderer, xx[k] + i, yy[k] - j);
-                SDL_RenderDrawPoint(renderer, xx[k] - i, yy[k] + j);
-                SDL_RenderDrawPoint(renderer, xx[k] - i, yy[k] - j);
-                SDL_RenderDrawPoint(renderer, xx[k] + j, yy[k] + i);
-                SDL_RenderDrawPoint(renderer, xx[k] + j, yy[k] - i);
-                SDL_RenderDrawPoint(renderer, xx[k] - j, yy[k] + i);
-                SDL_RenderDrawPoint(renderer, xx[k] - j, yy[k] - i);
+                if (SDL_RenderDrawPoint(renderer, xx[k] + i, yy[k] + j)) fprintf(stderr, "%s\n", SDL_GetError());
+                if (SDL_RenderDrawPoint(renderer, xx[k] + i, yy[k] - j)) fprintf(stderr, "%s\n", SDL_GetError());
+                if (SDL_RenderDrawPoint(renderer, xx[k] - i, yy[k] + j)) fprintf(stderr, "%s\n", SDL_GetError());
+                if (SDL_RenderDrawPoint(renderer, xx[k] - i, yy[k] - j)) fprintf(stderr, "%s\n", SDL_GetError());
+                if (SDL_RenderDrawPoint(renderer, xx[k] + j, yy[k] + i)) fprintf(stderr, "%s\n", SDL_GetError());
+                if (SDL_RenderDrawPoint(renderer, xx[k] + j, yy[k] - i)) fprintf(stderr, "%s\n", SDL_GetError());
+                if (SDL_RenderDrawPoint(renderer, xx[k] - j, yy[k] + i)) fprintf(stderr, "%s\n", SDL_GetError());
+                if (SDL_RenderDrawPoint(renderer, xx[k] - j, yy[k] - i)) fprintf(stderr, "%s\n", SDL_GetError());
             }
         }
     }
@@ -32,7 +32,9 @@ static void fillCircles(SDL_Renderer* renderer, int size, int xx[size], int yy[s
 }
 
 void printLines(View* view){
-    SDL_SetRenderDrawColor(view->renderer, LINE_R, LINE_G, LINE_B, LINE_A);
+    if (SDL_SetRenderDrawColor(view->renderer, LINE_R, LINE_G, LINE_B, LINE_A))
+        fprintf(stderr, "%s\n", SDL_GetError());
+
     (view->line_small_V)->x = 0;
     (view->line_small_V)->y = PANEL_SIZE;
     (view->line_small_H)->x = 0;
@@ -43,36 +45,44 @@ void printLines(View* view){
     for (int i = 1; i < 8; i ++){
         // lignes horizontales
         (view->line_H)->y = PANEL_SIZE + i * SIZE - LINE_SIZE / 2;
-        SDL_RenderFillRect(view->renderer, view->line_H);
+        if (SDL_RenderFillRect(view->renderer, view->line_H))
+            fprintf(stderr, "%s\n", SDL_GetError());
 
         // lignes verticales
         (view->line_V)->x = i * SIZE - LINE_SIZE / 2;
-        SDL_RenderFillRect(view->renderer, view->line_V);
+        if (SDL_RenderFillRect(view->renderer, view->line_V))
+            fprintf(stderr, "%s\n", SDL_GetError());
     }
 
     // top horizontal
-    SDL_RenderFillRect(view->renderer, view->line_small_H);
+    if (SDL_RenderFillRect(view->renderer, view->line_small_H))
+        fprintf(stderr, "%s\n", SDL_GetError());
 
     // left vertical
-    SDL_RenderFillRect(view->renderer, view->line_small_V);
+    if (SDL_RenderFillRect(view->renderer, view->line_small_V))
+        fprintf(stderr, "%s\n", SDL_GetError());
 
     // bot horizontal
     (view->line_small_H)->y = PANEL_SIZE + BOARD_SIZE - LINE_SIZE / 2;
-    SDL_RenderFillRect(view->renderer, view->line_small_H);
+    if (SDL_RenderFillRect(view->renderer, view->line_small_H))
+        fprintf(stderr, "%s\n", SDL_GetError());
 
     // right vertical
     (view->line_small_V)->x = BOARD_SIZE - LINE_SIZE / 2;
-    SDL_RenderFillRect(view->renderer, view->line_small_V);
+    if (SDL_RenderFillRect(view->renderer, view->line_small_V))
+        fprintf(stderr, "%s\n", SDL_GetError());
 }
 
 void printTiles(View* view){
-    SDL_SetRenderDrawColor(view->renderer, TILE_R, TILE_G, TILE_B, TILE_A);
+    if (SDL_SetRenderDrawColor(view->renderer, TILE_R, TILE_G, TILE_B, TILE_A))
+        fprintf(stderr, "%s\n", SDL_GetError());
 
     (view->tile)->x = LINE_SIZE / 2;
     for (int i = 0; i < 8; i ++){
         for (int j = 0; j < 8; j ++){
             (view->tile)->y = PANEL_SIZE + j * SIZE + LINE_SIZE / 2;
-            SDL_RenderFillRect(view->renderer, view->tile);
+            if (SDL_RenderFillRect(view->renderer, view->tile))
+                fprintf(stderr, "%s\n", SDL_GetError());
         }
         (view->tile)->x += SIZE;
     }
@@ -80,28 +90,42 @@ void printTiles(View* view){
 }
 
 void printMenu(View* view){
-    SDL_SetRenderDrawColor(view->renderer, HEADER_PANEL_R, HEADER_PANEL_G, HEADER_PANEL_B, HEADER_PANEL_A);
-    SDL_RenderFillRect(view->renderer, view->header_panel);
+    if (SDL_SetRenderDrawColor(view->renderer, HEADER_PANEL_R, HEADER_PANEL_G, HEADER_PANEL_B, HEADER_PANEL_A))
+        fprintf(stderr, "%s\n", SDL_GetError());
+    if (SDL_RenderFillRect(view->renderer, view->header_panel))
+        fprintf(stderr, "%s\n", SDL_GetError());
 
-    SDL_SetRenderDrawColor(view->renderer, QUIT_BUTTON_R, QUIT_BUTTON_G, QUIT_BUTTON_B, QUIT_BUTTON_A);
-    SDL_RenderFillRect(view->renderer, view->quitButton);
+    if (SDL_SetRenderDrawColor(view->renderer, QUIT_BUTTON_R, QUIT_BUTTON_G, QUIT_BUTTON_B, QUIT_BUTTON_A))
+        fprintf(stderr, "%s\n", SDL_GetError());
+    if (SDL_RenderFillRect(view->renderer, view->quitButton))
+        fprintf(stderr, "%s\n", SDL_GetError());
 
-    SDL_SetRenderDrawColor(view->renderer, START_OVER_BUTTON_R, START_OVER_BUTTON_G, START_OVER_BUTTON_B, START_OVER_BUTTON_A);
-    SDL_RenderFillRect(view->renderer, view->startOverButton);
+    if (SDL_SetRenderDrawColor(view->renderer, START_OVER_BUTTON_R, START_OVER_BUTTON_G, START_OVER_BUTTON_B, START_OVER_BUTTON_A))
+        fprintf(stderr, "%s\n", SDL_GetError());
+    if (SDL_RenderFillRect(view->renderer, view->startOverButton))
+        fprintf(stderr, "%s\n", SDL_GetError());
 
-    SDL_SetRenderDrawColor(view->renderer, UNDO_BUTTON_R, UNDO_BUTTON_G, UNDO_BUTTON_B, UNDO_BUTTON_A);
-    SDL_RenderFillRect(view->renderer, view->undoButton);
+    if (SDL_SetRenderDrawColor(view->renderer, UNDO_BUTTON_R, UNDO_BUTTON_G, UNDO_BUTTON_B, UNDO_BUTTON_A))
+        fprintf(stderr, "%s\n", SDL_GetError());
+    if (SDL_RenderFillRect(view->renderer, view->undoButton))
+        fprintf(stderr, "%s\n", SDL_GetError());
 
-    SDL_SetRenderDrawColor(view->renderer, MENU_BUTTON_R, MENU_BUTTON_G, MENU_BUTTON_B, MENU_BUTTON_A);
-    SDL_RenderFillRect(view->renderer, view->menuButton);
+    if (SDL_SetRenderDrawColor(view->renderer, MENU_BUTTON_R, MENU_BUTTON_G, MENU_BUTTON_B, MENU_BUTTON_A))
+        fprintf(stderr, "%s\n", SDL_GetError());
+    if (SDL_RenderFillRect(view->renderer, view->menuButton))
+        fprintf(stderr, "%s\n", SDL_GetError());
 
-    SDL_SetRenderDrawColor(view->renderer, TILE_R, TILE_G, TILE_B, TILE_A);
-    SDL_RenderFillRect(view->renderer, view->currentPlayer);
+    if (SDL_SetRenderDrawColor(view->renderer, TILE_R, TILE_G, TILE_B, TILE_A))
+        fprintf(stderr, "%s\n", SDL_GetError());
+    if (SDL_RenderFillRect(view->renderer, view->currentPlayer))
+        fprintf(stderr, "%s\n", SDL_GetError());
 }
 
 void print(View* view){
-    SDL_SetRenderDrawColor(view->renderer, 0, 0, 0, 255);
-    SDL_RenderClear(view->renderer);
+    if (SDL_SetRenderDrawColor(view->renderer, 0, 0, 0, 255))
+        fprintf(stderr, "%s\n", SDL_GetError());
+    if (SDL_RenderClear(view->renderer))
+        fprintf(stderr, "%s\n", SDL_GetError());
 
     printMenu(view);
     printLines(view);
@@ -117,7 +141,9 @@ View* getView(Uint8 pos_h){
     }
 
     SDL_DisplayMode dm;
-    SDL_GetCurrentDisplayMode(0, &dm);
+    if (SDL_GetCurrentDisplayMode(0, &dm))
+        fprintf(stderr, "%s\n", SDL_GetError());
+
     int x;
     if (pos_h == LEFT_SCREEN)
         x = dm.w / 4 - BOARD_SIZE / 2;
@@ -137,6 +163,11 @@ View* getView(Uint8 pos_h){
     }
 
     SDL_Renderer* renderer = SDL_CreateRenderer(screen, -1, 0);
+    if (renderer == NULL){
+        fprintf(stderr, "%s\n", SDL_GetError());
+        exit(EXIT_FAILURE);
+    }
+
     View* view = (View*)malloc(sizeof(View));
 
     if (view == NULL){
@@ -222,26 +253,34 @@ void printPieces(SDL_Renderer* renderer, Uint8 board[8][8], Uint8 player){
     }
 
     if (n1d){
-        SDL_SetRenderDrawColor(renderer, PLAYER1_R, PLAYER1_G, PLAYER1_B, PLAYER1_A);
+        if (SDL_SetRenderDrawColor(renderer, PLAYER1_R, PLAYER1_G, PLAYER1_B, PLAYER1_A))
+            fprintf(stderr, "%s\n", SDL_GetError());
         fillCircles(renderer, n1d, xx1, yy1, RADIUS);
     }
     if (n1e){
-        SDL_SetRenderDrawColor(renderer, PLAYER2_R, PLAYER2_G, PLAYER2_B, PLAYER2_A);
+        if (SDL_SetRenderDrawColor(renderer, PLAYER2_R, PLAYER2_G, PLAYER2_B, PLAYER2_A))
+            fprintf(stderr, "%s\n", SDL_GetError());
         fillCircles(renderer, n1e, xx1 + 64 - n1e, yy1 + 64 - n1e, RADIUS);
     }
     if (n2d){
-        SDL_SetRenderDrawColor(renderer, TILE_R, TILE_G, TILE_B, TILE_A);
+        if (SDL_SetRenderDrawColor(renderer, TILE_R, TILE_G, TILE_B, TILE_A))
+            fprintf(stderr, "%s\n", SDL_GetError());
         fillCircles(renderer, n2d, xx2, yy2, RADIUS);
     }
     if (n2e){
-        SDL_SetRenderDrawColor(renderer, POTENTIAL_R, POTENTIAL_G, POTENTIAL_B, POTENTIAL_A);
+        if (SDL_SetRenderDrawColor(renderer, POTENTIAL_R, POTENTIAL_G, POTENTIAL_B, POTENTIAL_A))
+            fprintf(stderr, "%s\n", SDL_GetError());
         fillCircles(renderer, n2e, xx2 + 64 - n2e, yy2 + 64 - n2e, RADIUS);
     }
 
-    if (player == 1)
-        SDL_SetRenderDrawColor(renderer, PLAYER1_R, PLAYER1_G, PLAYER1_B, PLAYER1_A);
-    else
-        SDL_SetRenderDrawColor(renderer, PLAYER2_R, PLAYER2_G, PLAYER2_B, PLAYER2_A);
+    if (player == 1){
+        if (SDL_SetRenderDrawColor(renderer, PLAYER1_R, PLAYER1_G, PLAYER1_B, PLAYER1_A))
+            fprintf(stderr, "%s\n", SDL_GetError());
+    }
+    else{
+        if (SDL_SetRenderDrawColor(renderer, PLAYER2_R, PLAYER2_G, PLAYER2_B, PLAYER2_A))
+            fprintf(stderr, "%s\n", SDL_GetError());
+    }
 
     int x[1] = {BOARD_SIZE / 2};
     int y[1] = {PANEL_SIZE / 2};

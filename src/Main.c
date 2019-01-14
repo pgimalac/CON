@@ -61,7 +61,7 @@ static int networkThread(void* p) {
                     Uint8 y = buffer[2];
                     if (play(game, x, y)){
                         printf("Good move.\n");
-                        print(view);
+//                        print(view);
                         printPieces(view->renderer, game->board, game->current_player);
                     } else
                         fprintf(stderr, "Bad move.\n");
