@@ -1,5 +1,5 @@
-#ifndef STACK_INCLUDE
-#define STACK_INCLUDE
+#ifndef STACK
+#define STACK
 
 #include <stdio.h>
 #include <stdlib.h>
