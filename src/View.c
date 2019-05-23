@@ -136,7 +136,7 @@ void print(View* view){
 
 View* getView(Uint8 pos_h){
     if (SDL_Init(SDL_INIT_VIDEO)){
-        fprintf(stderr, "Erreur au chargement de la librairie graphique. %s\n", SDL_GetError());
+        fprintf(stderr, "Erreur au chargement de la bibliothèque graphique. %s\n", SDL_GetError());
         exit(EXIT_FAILURE);
     }
 

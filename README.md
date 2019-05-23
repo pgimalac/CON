@@ -8,7 +8,7 @@ Il se trouve que la V1.0 est le projet de C de 2015-2016 (je m'en suis rendu com
 ## Compilation et exécution
 Un makefile est fourni, un simple `make all` ou `make re` compilera la totalité du projet.
 
-La librairie graphique SDL (version 2) est nécessaire à l'exécution du programme.
+La bibliothèque graphique SDL (version 2) est nécessaire à l'exécution du programme.
 
 Pour l'exécuter en réseau, il faut ouvrir trois terminaux et faire :
 - Dans le premier terminal, `./con server`
