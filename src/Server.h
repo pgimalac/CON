@@ -1,16 +1,16 @@
 #ifndef SERVER
 #define SERVER
 
-#include <sys/types.h>
-#include <sys/socket.h>
 #include <arpa/inet.h>
-#include <sys/ioctl.h>
 #include <net/if.h>
 #include <netinet/in.h>
-#include <string.h>
 #include <poll.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <sys/ioctl.h>
+#include <sys/socket.h>
+#include <sys/types.h>
 #include <unistd.h>
 
 #define NAME_LENGTH 21
@@ -31,7 +31,8 @@
 
 /**
  * Return values of some functions.
- * RETURN_REBOOT isn't supposed to be returned, but is used inside some functions.
+ * RETURN_REBOOT isn't supposed to be returned, but is used inside some
+ * functions.
  */
 #define RETURN_SUCCESS -1
 #define RETURN_REBOOT -2
@@ -40,7 +41,8 @@
 
 #define POLL_ERROR (POLLNVAL | POLLERR | POLLHUP)
 
-#define FAT_BUFFER_SIZE (TOTAL_NUMBER_OF_HOSTS * (NAME_LENGTH + INET_ADDRSTRLEN) + 2 + sizeof(int))
+#define FAT_BUFFER_SIZE                                                        \
+    (TOTAL_NUMBER_OF_HOSTS * (NAME_LENGTH + INET_ADDRSTRLEN) + 2 + sizeof(int))
 
 #define WAIT_TIME 5000
 
@@ -85,22 +87,22 @@ int getTalkToClientSock(int);
  * The string is an ip and the int a port.
  * If the given string is NULL, takes the ip of the server.
  */
-int getTalkToServerSock(char*, int);
+int getTalkToServerSock(char *, int);
 
 /**
  * if the given int matches POLLNVAL or POLLERR or POLLHUP, prints an error
  */
-void printPollError(int, char*);
+void printPollError(int, char *);
 
 /**
  * If the given string's length is less than INET_ADDRSTRLEN
  * the function changes the server ip address
  */
-void setServerIpAddress(char*);
+void setServerIpAddress(char *);
 
 /**
  * Returns the current server ip address
  */
-char* getServerIpAddress();
+char *getServerIpAddress();
 
 #endif

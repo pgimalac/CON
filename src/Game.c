@@ -1,33 +1,40 @@
 #include "Game.h"
 
-static void emptyPossibles(Game* game){
+static void emptyPossibles(Game *game) {
     for (int i = 0; i < 8; i++)
         for (int j = 0; j < 8; j++)
             if (game->board[i][j] == PLAYABLE)
                 game->board[i][j] = EMPTY;
 }
 
-static int updatePossiblePlay(Game* game){
+static int updatePossiblePlay(Game *game) {
     emptyPossibles(game);
     int num = 0;
-    for (int i = 0; i < BOARD_WIDTH; i++){
-        for (int j = 0; j < BOARD_WIDTH; j++){
-            lbl_inner_loop:
-            if (game->board[i][j] != EMPTY) continue; // it is PLAYABLE if we come from the goto
-            for (int dx = -1; dx < 2; dx ++){
-                for (int dy = -1; dy < 2; dy ++){
+    for (int i = 0; i < BOARD_WIDTH; i++) {
+        for (int j = 0; j < BOARD_WIDTH; j++) {
+        lbl_inner_loop:
+            if (game->board[i][j] != EMPTY)
+                continue; // it is PLAYABLE if we come from the goto
+            for (int dx = -1; dx < 2; dx++) {
+                for (int dy = -1; dy < 2; dy++) {
                     int x = i;
                     int y = j;
-                    if (dx == 0 && dy == 0) continue;
+                    if (dx == 0 && dy == 0)
+                        continue;
                     Uint8 c = -1;
-                    do{
-                        c ++;
+                    do {
+                        c++;
                         x += dx;
                         y += dy;
-                    }while(x >= 0 && y >= 0 && x < BOARD_WIDTH && y < BOARD_WIDTH && game->board[x][y] == OTHER_PLAYER(game->current_player));
-                    if (c && x >= 0 && y >= 0 && x < BOARD_WIDTH && y < BOARD_WIDTH && game->board[x][y] == game->current_player){
+                    } while (x >= 0 && y >= 0 && x < BOARD_WIDTH &&
+                             y < BOARD_WIDTH &&
+                             game->board[x][y] ==
+                                 OTHER_PLAYER(game->current_player));
+                    if (c && x >= 0 && y >= 0 && x < BOARD_WIDTH &&
+                        y < BOARD_WIDTH &&
+                        game->board[x][y] == game->current_player) {
                         game->board[i][j] = PLAYABLE;
-                        num ++;
+                        num++;
                         j++;
                         if (j < 8)
                             goto lbl_inner_loop;
@@ -39,42 +46,48 @@ static int updatePossiblePlay(Game* game){
     return num;
 }
 
-static void nextPlayer(Game* game){
-    if (game->current_player == NONE){
-        printf("Error in %s line %d : no current_player player.\n", __FILE__, __LINE__);
+static void nextPlayer(Game *game) {
+    if (game->current_player == NONE) {
+        printf("Error in %s line %d : no current_player player.\n", __FILE__,
+               __LINE__);
         exit(EXIT_FAILURE);
     } else
         game->current_player = OTHER_PLAYER(game->current_player);
 
-    if (updatePossiblePlay(game) == FALSE){
-        if (game->block == TRUE) game->current_player = NONE;
-        else{
+    if (updatePossiblePlay(game) == FALSE) {
+        if (game->block == TRUE)
+            game->current_player = NONE;
+        else {
             game->block = TRUE;
             printf("Blocked !\n");
             nextPlayer(game);
         }
-    } else game->block = FALSE;
+    } else
+        game->block = FALSE;
 }
 
-static void playTile(Game* game, int x, int y){
-    Fifo* file = getFifo();
+static void playTile(Game *game, int x, int y) {
+    Fifo *file = getFifo();
     addFirstFifo(file, x, y);
 
-    for (int dx = -1; dx < 2; dx ++){
-        for (int dy = -1; dy < 2; dy ++){
+    for (int dx = -1; dx < 2; dx++) {
+        for (int dy = -1; dy < 2; dy++) {
             int tmpN = 0;
             int xx = x + dx;
             int yy = y + dy;
-            if (dx == 0 && dy == 0) continue;
-            while(xx >= 0 && yy >= 0 && xx < BOARD_WIDTH && yy < BOARD_WIDTH && game->board[xx][yy] == OTHER_PLAYER(game->current_player)) {
+            if (dx == 0 && dy == 0)
+                continue;
+            while (xx >= 0 && yy >= 0 && xx < BOARD_WIDTH && yy < BOARD_WIDTH &&
+                   game->board[xx][yy] == OTHER_PLAYER(game->current_player)) {
                 addLastFifo(file, xx, yy);
 
-                tmpN ++;
+                tmpN++;
                 xx += dx;
                 yy += dy;
             }
-            if (xx < 0 || yy < 0 || xx >= BOARD_WIDTH || yy >= BOARD_WIDTH || game->board[xx][yy] != game->current_player){
-                for (int i = 0; i < tmpN; i ++)
+            if (xx < 0 || yy < 0 || xx >= BOARD_WIDTH || yy >= BOARD_WIDTH ||
+                game->board[xx][yy] != game->current_player) {
+                for (int i = 0; i < tmpN; i++)
                     removeLastFifo(file);
             }
         }
@@ -86,9 +99,9 @@ static void playTile(Game* game, int x, int y){
     addLastFifo(game->moves, x, y);
 }
 
-Game* init(Uint8 gameType, Uint8 role){
-    Game* game = malloc(sizeof(Game));
-    if (!game){
+Game *init(Uint8 gameType, Uint8 role) {
+    Game *game = malloc(sizeof(Game));
+    if (!game) {
         perror("malloc");
         exit(EXIT_FAILURE);
     }
@@ -98,7 +111,7 @@ Game* init(Uint8 gameType, Uint8 role){
     return game;
 }
 
-void reInit(Game* game, Uint8 gameType, Uint8 role){
+void reInit(Game *game, Uint8 gameType, Uint8 role) {
     game->current_player = PLAYER1;
     game->block = FALSE;
     game->gameType = gameType;
@@ -106,8 +119,8 @@ void reInit(Game* game, Uint8 gameType, Uint8 role){
 
     removeAllFifo(game->moves);
 
-    for (int i = 0; i < 8; i ++)
-        for (int j = 0; j < 8; j ++)
+    for (int i = 0; i < 8; i++)
+        for (int j = 0; j < 8; j++)
             game->board[i][j] = EMPTY;
 
     game->board[3][3] = PLAYER1;
@@ -119,15 +132,16 @@ void reInit(Game* game, Uint8 gameType, Uint8 role){
 }
 
 // annule les n derniers coups
-void cancelMoves(Game* game, int n){
-    Fifo* fifo = game->moves;
+void cancelMoves(Game *game, int n) {
+    Fifo *fifo = game->moves;
     game->moves = getFifo();
     reInit(game, game->gameType, game->role);
 
-    for (int i = 0; i < n && removeLastFifo(fifo); i++) ;
+    for (int i = 0; i < n && removeLastFifo(fifo); i++)
+        ;
 
-    File* file = (fifo->first);
-    while(file){
+    File *file = (fifo->first);
+    while (file) {
         playTile(game, file->x, file->y);
         nextPlayer(game);
         file = file->next;
@@ -136,13 +150,13 @@ void cancelMoves(Game* game, int n){
     freeFifo(fifo);
 }
 
-void freeGame(Game* game){
+void freeGame(Game *game) {
     freeFifo(game->moves);
     free(game);
 }
 
-int play(Game* game, int x, int y){
-    if (game->board[x][y] == PLAYABLE){
+int play(Game *game, int x, int y) {
+    if (game->board[x][y] == PLAYABLE) {
         playTile(game, x, y);
         nextPlayer(game);
         if (game->current_player == NONE)

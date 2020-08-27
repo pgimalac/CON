@@ -41,17 +41,17 @@ typedef struct {
     /**
      * the stack of moves (to be able to cancel)
      */
-	Fifo* moves;
+    Fifo *moves;
 
     /**
      * the current player
      */
-	int current_player;
+    int current_player;
 
     /**
      * the board
      */
-	Uint8 board[BOARD_WIDTH][BOARD_WIDTH];
+    Uint8 board[BOARD_WIDTH][BOARD_WIDTH];
 
     /**
      * true if a player was blocked the previous turn, false otherwise
@@ -69,10 +69,10 @@ typedef struct {
     Uint8 role;
 } Game;
 
-Game* init(Uint8, Uint8);
-int play(Game*, int, int);
-void reInit(Game*, Uint8, Uint8);
-void freeGame(Game*);
-void cancelMoves(Game*, int);
+Game *init(Uint8, Uint8);
+int play(Game *, int, int);
+void reInit(Game *, Uint8, Uint8);
+void freeGame(Game *);
+void cancelMoves(Game *, int);
 
 #endif

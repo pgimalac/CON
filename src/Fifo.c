@@ -1,7 +1,7 @@
 #include "Fifo.h"
 
-void addFirstFifo(Fifo* fifo, int x, int y){
-    File* file = getFile(x, y);
+void addFirstFifo(Fifo *fifo, int x, int y) {
+    File *file = getFile(x, y);
 
     file->next = fifo->first;
 
@@ -13,8 +13,8 @@ void addFirstFifo(Fifo* fifo, int x, int y){
     fifo->first = file;
 }
 
-void addLastFifo(Fifo* fifo, int x, int y){
-    File* file = getFile(x, y);
+void addLastFifo(Fifo *fifo, int x, int y) {
+    File *file = getFile(x, y);
 
     file->prev = fifo->last;
 
@@ -26,9 +26,9 @@ void addLastFifo(Fifo* fifo, int x, int y){
     fifo->last = file;
 }
 
-Uint8 removeFirstFifo(Fifo* fifo){
-    File* file = fifo->first;
-    if (file){
+Uint8 removeFirstFifo(Fifo *fifo) {
+    File *file = fifo->first;
+    if (file) {
         fifo->first = file->next;
 
         if (file->next)
@@ -41,9 +41,9 @@ Uint8 removeFirstFifo(Fifo* fifo){
     return !isEmptyFifo(fifo);
 }
 
-Uint8 removeLastFifo(Fifo* fifo){
-    File* file = fifo->last;
-    if (file){
+Uint8 removeLastFifo(Fifo *fifo) {
+    File *file = fifo->last;
+    if (file) {
         fifo->last = file->prev;
 
         if (file->prev != NULL)
@@ -56,10 +56,10 @@ Uint8 removeLastFifo(Fifo* fifo){
     return !isEmptyFifo(fifo);
 }
 
-File* getFile(int x, int y){
-    File* file = malloc(sizeof(File));
+File *getFile(int x, int y) {
+    File *file = malloc(sizeof(File));
 
-    if (file == NULL){
+    if (file == NULL) {
         perror("malloc");
         exit(EXIT_FAILURE);
     }
@@ -72,29 +72,30 @@ File* getFile(int x, int y){
     return file;
 }
 
-Fifo* getFifo(){
-    Fifo* fifo = malloc(sizeof(Fifo));
-    if (fifo == NULL){
+Fifo *getFifo() {
+    Fifo *fifo = malloc(sizeof(Fifo));
+    if (fifo == NULL) {
         perror("malloc");
         exit(EXIT_FAILURE);
     }
     fifo->first = NULL;
-    fifo->last  = NULL;
+    fifo->last = NULL;
 
     return fifo;
 }
 
-Uint8 isEmptyFifo(Fifo* fifo){
+Uint8 isEmptyFifo(Fifo *fifo) {
     return fifo == NULL ? -1 : fifo->first == NULL;
 }
 
-void freeFifo(Fifo* fifo){
-    if (fifo){
+void freeFifo(Fifo *fifo) {
+    if (fifo) {
         removeAllFifo(fifo);
         free(fifo);
     }
 }
 
-void removeAllFifo(Fifo* fifo){
-    while (removeLastFifo(fifo)) ;
+void removeAllFifo(Fifo *fifo) {
+    while (removeLastFifo(fifo))
+        ;
 }

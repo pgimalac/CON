@@ -1,15 +1,15 @@
 #ifndef HANDLER
 #define HANDLER
 
-#include <time.h>
+#include <SDL2/SDL.h>
 #include <stdio.h>
 #include <sys/socket.h>
-#include <SDL2/SDL.h>
+#include <time.h>
 
-#include "View.h"
+#include "Game.h"
 #include "Network.h"
 #include "Server.h"
-#include "Game.h"
+#include "View.h"
 
 #define DRAW_TILES 1
 #define DRAW_MENU 2

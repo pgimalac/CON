@@ -1,15 +1,15 @@
 #ifndef VIEW_INCLUDE
 #define VIEW_INCLUDE
 
-#include <stdlib.h>
 #include <SDL2/SDL.h>
+#include <stdlib.h>
 
-#define SIZE  80
-#define BOARD_SIZE  (8 * SIZE)
-#define PANEL_SIZE  160
-#define LINE_SIZE   2
-#define RADIUS      (2 * SIZE / 5)
-#define BORD        5
+#define SIZE 80
+#define BOARD_SIZE (8 * SIZE)
+#define PANEL_SIZE 160
+#define LINE_SIZE 2
+#define RADIUS (2 * SIZE / 5)
+#define BORD 5
 #define BUTTON_SIZE ((PANEL_SIZE - 4 * BORD) / 2)
 
 #define TILE_R 42
@@ -92,28 +92,28 @@
 #define RIGHT_SCREEN 3
 
 typedef struct {
-    SDL_Window* screen;
-    SDL_Renderer* renderer;
+    SDL_Window *screen;
+    SDL_Renderer *renderer;
 
-    SDL_Rect* header_panel;
-    SDL_Rect* quitButton;
-    SDL_Rect* startOverButton;
-    SDL_Rect* undoButton;
-    SDL_Rect* menuButton;
-    SDL_Rect* currentPlayer;
+    SDL_Rect *header_panel;
+    SDL_Rect *quitButton;
+    SDL_Rect *startOverButton;
+    SDL_Rect *undoButton;
+    SDL_Rect *menuButton;
+    SDL_Rect *currentPlayer;
 
-    SDL_Rect* line_H;
-    SDL_Rect* line_V;
-    SDL_Rect* line_small_H;
-    SDL_Rect* line_small_V;
-    SDL_Rect* tile;
+    SDL_Rect *line_H;
+    SDL_Rect *line_V;
+    SDL_Rect *line_small_H;
+    SDL_Rect *line_small_V;
+    SDL_Rect *tile;
 } View;
 
-View* getView(Uint8);
-void print(View*);
-void printPieces(SDL_Renderer*, Uint8[8][8], Uint8);
-void printLines(View*);
-void printTiles(View*);
-void freeView(View*);
+View *getView(Uint8);
+void print(View *);
+void printPieces(SDL_Renderer *, Uint8[8][8], Uint8);
+void printLines(View *);
+void printTiles(View *);
+void freeView(View *);
 
 #endif
